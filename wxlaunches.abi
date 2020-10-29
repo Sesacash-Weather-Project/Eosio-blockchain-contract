@@ -8,6 +8,10 @@
             "base": "",
             "fields": [
                 {
+                    "name": "launch_id",
+                    "type": "name"
+                },
+                {
                     "name": "unix_time",
                     "type": "uint64"
                 },
@@ -20,42 +24,12 @@
                     "type": "float32"
                 },
                 {
-                    "name": "relHumidity",
-                    "type": "float32"
-                },
-                {
                     "name": "dewPoint_c",
                     "type": "float32"
                 },
                 {
-                    "name": "wind_mph",
+                    "name": "elevation_m",
                     "type": "float32"
-                },
-                {
-                    "name": "wind_degrees",
-                    "type": "float32"
-                }
-            ]
-        },
-        {
-            "name": "iotsetlaunch",
-            "base": "",
-            "fields": [
-                {
-                    "name": "lat",
-                    "type": "float32"
-                },
-                {
-                    "name": "lon",
-                    "type": "float32"
-                },
-                {
-                    "name": "pressure",
-                    "type": "float32"
-                },
-                {
-                    "name": "reward_amount",
-                    "type": "uint32"
                 }
             ]
         },
@@ -64,8 +38,8 @@
             "base": "",
             "fields": [
                 {
-                    "name": "launch_number",
-                    "type": "uint64"
+                    "name": "launch_id",
+                    "type": "name"
                 },
                 {
                     "name": "unix_time",
@@ -76,7 +50,59 @@
                     "type": "name"
                 },
                 {
-                    "name": "miner_memo",
+                    "name": "device_type",
+                    "type": "string"
+                },
+                {
+                    "name": "level_reached",
+                    "type": "uint16"
+                },
+                {
+                    "name": "wxcondition",
+                    "type": "string"
+                },
+                {
+                    "name": "wx6hrcondition",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "observations",
+            "base": "",
+            "fields": [
+                {
+                    "name": "launch_id",
+                    "type": "name"
+                },
+                {
+                    "name": "unix_time",
+                    "type": "uint64"
+                },
+                {
+                    "name": "pressure_hpa",
+                    "type": "float32"
+                },
+                {
+                    "name": "temperature_c",
+                    "type": "float32"
+                },
+                {
+                    "name": "dewPoint_c",
+                    "type": "float32"
+                },
+                {
+                    "name": "elevation_m",
+                    "type": "float32"
+                }
+            ]
+        },
+        {
+            "name": "setstation",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
                     "type": "string"
                 },
                 {
@@ -88,57 +114,41 @@
                     "type": "float32"
                 },
                 {
-                    "name": "surf_pressure_hpa",
+                    "name": "elevation",
                     "type": "float32"
                 },
                 {
-                    "name": "wxcondition",
-                    "type": "string"
-                },
-                {
-                    "name": "reward_amount",
-                    "type": "uint32"
-                },
-                {
-                    "name": "reward_sent",
-                    "type": "bool"
+                    "name": "reward_increment",
+                    "type": "float32"
                 }
             ]
         },
         {
-            "name": "observations",
+            "name": "station",
             "base": "",
             "fields": [
                 {
-                    "name": "launch_number",
-                    "type": "uint8"
+                    "name": "id",
+                    "type": "name"
                 },
                 {
-                    "name": "unix_time",
-                    "type": "uint64"
+                    "name": "owner",
+                    "type": "string"
                 },
                 {
-                    "name": "pressure_hpa",
+                    "name": "latitude",
                     "type": "float32"
                 },
                 {
-                    "name": "temperature_c",
+                    "name": "longitude",
                     "type": "float32"
                 },
                 {
-                    "name": "relHumidity",
+                    "name": "elevation",
                     "type": "float32"
                 },
                 {
-                    "name": "dewPoint_c",
-                    "type": "float32"
-                },
-                {
-                    "name": "wind_mph",
-                    "type": "float32"
-                },
-                {
-                    "name": "wind_degrees",
+                    "name": "reward_increment",
                     "type": "float32"
                 }
             ]
@@ -148,6 +158,10 @@
             "base": "",
             "fields": [
                 {
+                    "name": "launch_id",
+                    "type": "name"
+                },
+                {
                     "name": "unix_time",
                     "type": "uint64"
                 },
@@ -156,11 +170,29 @@
                     "type": "name"
                 },
                 {
-                    "name": "memo",
+                    "name": "device_type",
                     "type": "string"
                 },
                 {
                     "name": "wxcondition",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "websetsixhr",
+            "base": "",
+            "fields": [
+                {
+                    "name": "launch_id",
+                    "type": "name"
+                },
+                {
+                    "name": "miner",
+                    "type": "name"
+                },
+                {
+                    "name": "wx6hrcondition",
                     "type": "string"
                 }
             ]
@@ -173,13 +205,18 @@
             "ricardian_contract": ""
         },
         {
-            "name": "iotsetlaunch",
-            "type": "iotsetlaunch",
+            "name": "setstation",
+            "type": "setstation",
             "ricardian_contract": ""
         },
         {
             "name": "websetlaunch",
             "type": "websetlaunch",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "websetsixhr",
+            "type": "websetsixhr",
             "ricardian_contract": ""
         }
     ],
@@ -194,6 +231,13 @@
         {
             "name": "observations",
             "type": "observations",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "station",
+            "type": "station",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
