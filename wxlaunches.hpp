@@ -8,51 +8,67 @@ CONTRACT wxlaunches : public contract {
     using contract::contract;
 
     // Should be called by device
-    ACTION addobs(uint64_t unix_time, 
+    ACTION addobs(name launch_id,
+                  uint64_t unix_time, 
                   float pressure_hpa, 
                   float temperature_c, 
-                  float relHumidity, 
                   float dewPoint_c,
-                  float wind_mph, // Calculated off chain
-                  float wind_degrees); // Calculated off chain
+                  float elevation_m);
 
-    ACTION websetlaunch(uint64_t unix_time, name miner, string memo, string wxcondition);
+    ACTION setstation(string owner, 
+                      float latitude, 
+                      float longitude, 
+                      float elevation, 
+                      float reward_increment);
 
-    ACTION iotsetlaunch(float lat, float lon, float pressure, uint32_t reward_amount);
+    ACTION websetlaunch(name launch_id, 
+                        uint64_t unix_time, 
+                        name miner, 
+                        string device_type,
+                        string wxcondition);
 
-    //auto get_last_launch_iterator();
-    //void set_reward_sent(bool ifSent);
+    ACTION websetsixhr(name launch_id, 
+                       name miner,
+                       string wx6hrcondition);
 
   private:
 
     TABLE observations {
-      uint8_t launch_number;
+      name launch_id;
       uint64_t unix_time;
       float pressure_hpa;
       float temperature_c;
-      float relHumidity;
       float dewPoint_c;
-      float wind_mph;
-      float wind_degrees;
+      float elevation_m;
 
       auto  primary_key() const { return unix_time; }
     };
     typedef multi_index<name("observations"), observations> observations_table_t;
 
     TABLE launches {
-      uint64_t launch_number;
+      name launch_id;
       uint64_t unix_time;
       name miner;
-      string miner_memo;
-      float latitude;
-      float longitude;
-      float surf_pressure_hpa;
+      string device_type;
+      uint16_t level_reached;
       string wxcondition;
-      uint32_t reward_amount;
-      bool reward_sent;
+      string wx6hrcondition;
 
-      auto  primary_key() const { return launch_number; }
+      auto  primary_key() const { return launch_id.value; }
     };
     typedef multi_index<name("launches"), launches> launches_table_t;
+
+    TABLE station {
+       name id;
+       string owner;
+       float latitude;
+       float longitude;
+       float elevation;
+       float reward_increment;
+
+       auto  primary_key() const { return id.value; }
+    };
+
+    typedef multi_index<name("station"), station> station_table_t;
 
 };
