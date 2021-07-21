@@ -12,7 +12,7 @@
                     "type": "name"
                 },
                 {
-                    "name": "unix_time",
+                    "name": "unix_time_s",
                     "type": "uint64"
                 },
                 {
@@ -24,12 +24,42 @@
                     "type": "float32"
                 },
                 {
-                    "name": "dewPoint_c",
+                    "name": "humidity_percent",
                     "type": "float32"
                 },
                 {
-                    "name": "elevation_m",
+                    "name": "latitude_deg",
                     "type": "float32"
+                },
+                {
+                    "name": "longitude_deg",
+                    "type": "float32"
+                },
+                {
+                    "name": "gps_elevation_m",
+                    "type": "uint16"
+                },
+                {
+                    "name": "elevation2_m",
+                    "type": "uint16"
+                },
+                {
+                    "name": "flags",
+                    "type": "uint8"
+                }
+            ]
+        },
+        {
+            "name": "flags",
+            "base": "",
+            "fields": [
+                {
+                    "name": "bit_number",
+                    "type": "uint64"
+                },
+                {
+                    "name": "description",
+                    "type": "string"
                 }
             ]
         },
@@ -50,19 +80,43 @@
                     "type": "name"
                 },
                 {
-                    "name": "device_type",
-                    "type": "string"
+                    "name": "assistant",
+                    "type": "name"
+                },
+                {
+                    "name": "surf_pressure",
+                    "type": "float32"
                 },
                 {
                     "name": "level_reached",
-                    "type": "uint16"
+                    "type": "float32"
+                },
+                {
+                    "name": "device_type",
+                    "type": "string"
                 },
                 {
                     "name": "wxcondition",
                     "type": "string"
                 },
                 {
-                    "name": "wx6hrcondition",
+                    "name": "if_released",
+                    "type": "bool"
+                },
+                {
+                    "name": "last_known_lat",
+                    "type": "float32"
+                },
+                {
+                    "name": "last_known_lon",
+                    "type": "float32"
+                },
+                {
+                    "name": "last_known_elev",
+                    "type": "float32"
+                },
+                {
+                    "name": "wx12hrcondition",
                     "type": "string"
                 }
             ]
@@ -72,12 +126,12 @@
             "base": "",
             "fields": [
                 {
-                    "name": "launch_id",
-                    "type": "name"
-                },
-                {
                     "name": "unix_time",
                     "type": "uint64"
+                },
+                {
+                    "name": "launch_id",
+                    "type": "name"
                 },
                 {
                     "name": "pressure_hpa",
@@ -88,12 +142,56 @@
                     "type": "float32"
                 },
                 {
-                    "name": "dewPoint_c",
+                    "name": "humidity_percent",
                     "type": "float32"
                 },
                 {
-                    "name": "elevation_m",
+                    "name": "latitude_deg",
                     "type": "float32"
+                },
+                {
+                    "name": "longitude_deg",
+                    "type": "float32"
+                },
+                {
+                    "name": "elevation_gps_m",
+                    "type": "uint16"
+                },
+                {
+                    "name": "elevation2_m",
+                    "type": "uint16"
+                },
+                {
+                    "name": "flags",
+                    "type": "uint8"
+                }
+            ]
+        },
+        {
+            "name": "removeobs",
+            "base": "",
+            "fields": [
+                {
+                    "name": "unix_time_start",
+                    "type": "uint64"
+                },
+                {
+                    "name": "unix_time_end",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "setflag",
+            "base": "",
+            "fields": [
+                {
+                    "name": "bit_number",
+                    "type": "uint64"
+                },
+                {
+                    "name": "description",
+                    "type": "string"
                 }
             ]
         },
@@ -118,8 +216,48 @@
                     "type": "float32"
                 },
                 {
+                    "name": "missing",
+                    "type": "float32"
+                },
+                {
                     "name": "reward_increment",
                     "type": "float32"
+                },
+                {
+                    "name": "launch_window_hrs",
+                    "type": "uint8"
+                },
+                {
+                    "name": "launch_freq_hrs",
+                    "type": "uint8"
+                }
+            ]
+        },
+        {
+            "name": "settimeslots",
+            "base": "",
+            "fields": [
+                {
+                    "name": "first_start_time",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "settwelvehr",
+            "base": "",
+            "fields": [
+                {
+                    "name": "launch_id",
+                    "type": "name"
+                },
+                {
+                    "name": "miner",
+                    "type": "name"
+                },
+                {
+                    "name": "wx12hrcondition",
+                    "type": "string"
                 }
             ]
         },
@@ -148,8 +286,38 @@
                     "type": "float32"
                 },
                 {
+                    "name": "missing",
+                    "type": "float32"
+                },
+                {
                     "name": "reward_increment",
                     "type": "float32"
+                },
+                {
+                    "name": "launch_window_hrs",
+                    "type": "uint8"
+                },
+                {
+                    "name": "launch_freq_hrs",
+                    "type": "uint8"
+                }
+            ]
+        },
+        {
+            "name": "timeslots",
+            "base": "",
+            "fields": [
+                {
+                    "name": "start_time",
+                    "type": "uint64"
+                },
+                {
+                    "name": "end_time",
+                    "type": "uint64"
+                },
+                {
+                    "name": "human_window",
+                    "type": "string"
                 }
             ]
         },
@@ -166,6 +334,10 @@
                     "type": "uint64"
                 },
                 {
+                    "name": "surf_pressure",
+                    "type": "float32"
+                },
+                {
                     "name": "miner",
                     "type": "name"
                 },
@@ -178,24 +350,6 @@
                     "type": "string"
                 }
             ]
-        },
-        {
-            "name": "websetsixhr",
-            "base": "",
-            "fields": [
-                {
-                    "name": "launch_id",
-                    "type": "name"
-                },
-                {
-                    "name": "miner",
-                    "type": "name"
-                },
-                {
-                    "name": "wx6hrcondition",
-                    "type": "string"
-                }
-            ]
         }
     ],
     "actions": [
@@ -205,22 +359,44 @@
             "ricardian_contract": ""
         },
         {
+            "name": "removeobs",
+            "type": "removeobs",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "setflag",
+            "type": "setflag",
+            "ricardian_contract": ""
+        },
+        {
             "name": "setstation",
             "type": "setstation",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "settimeslots",
+            "type": "settimeslots",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "settwelvehr",
+            "type": "settwelvehr",
             "ricardian_contract": ""
         },
         {
             "name": "websetlaunch",
             "type": "websetlaunch",
             "ricardian_contract": ""
-        },
-        {
-            "name": "websetsixhr",
-            "type": "websetsixhr",
-            "ricardian_contract": ""
         }
     ],
     "tables": [
+        {
+            "name": "flags",
+            "type": "flags",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
         {
             "name": "launches",
             "type": "launches",
@@ -238,6 +414,13 @@
         {
             "name": "station",
             "type": "station",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "timeslots",
+            "type": "timeslots",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
