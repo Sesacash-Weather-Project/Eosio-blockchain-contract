@@ -1,6 +1,7 @@
 #include <eosio/eosio.hpp>
-#include <eosio/time.hpp>
-#include <time.h>
+//#include <eosio/time.hpp>
+#include <math.h> // exponent pow() function
+//#include <time.h>
 
 using namespace std;
 using namespace eosio;
@@ -30,7 +31,6 @@ CONTRACT wxlaunches : public contract {
                       float longitude, 
                       float elevation,
                       float missing,
-                      float reward_increment,
                       uint8_t launch_window_hrs,
                       uint8_t launch_freq_hrs);
 
@@ -70,8 +70,13 @@ CONTRACT wxlaunches : public contract {
       uint8_t flags;
 
       auto  primary_key() const { return unix_time; }
+      uint64_t  get_secondary() const { return launch_id.value;}
     };
-    typedef multi_index<name("observations"), observations> observations_table_t;
+    //using observation_index = multi_index<"observations"_n, observations>;
+    using observation_index = multi_index<"observations"_n, 
+    observations,
+    indexed_by<"bylaunch"_n, const_mem_fun<observations, uint64_t, &observations::get_secondary>>
+    >;
 
     TABLE launches {
       name launch_id;
@@ -99,7 +104,6 @@ CONTRACT wxlaunches : public contract {
        float longitude;
        float elevation;
        float missing;
-       float reward_increment;
        uint8_t launch_window_hrs;
        uint8_t launch_freq_hrs;
 
@@ -123,5 +127,34 @@ CONTRACT wxlaunches : public contract {
       auto primary_key() const { return start_time; }
     };
     typedef multi_index<name("timeslots"), timeslots> timeslots_table_t;
+
+    // List all rewards to be sent out
+    TABLE rewards {
+      name token_contract;
+      bool usd_denominated;
+      float amount_per_mb;
+      string symbol_letters;
+      uint8_t precision; // e.g. 4 for Telos , 8 for Kanda
+
+      auto primary_key() const { return token_contract.value; }
+    };
+    typedef multi_index<name("rewards"), rewards> rewards_table_t;
+
+    TABLE delphi_data {
+      uint64_t id;
+      name owner; 
+      uint64_t value;
+      uint64_t median;
+      time_point timestamp;
+
+      uint64_t primary_key() const {return id;}
+      uint64_t by_timestamp() const {return timestamp.elapsed.to_seconds();}
+      uint64_t by_value() const {return value;}
+
+    };
+    typedef eosio::multi_index<"datapoints"_n, delphi_data,
+      indexed_by<"value"_n, const_mem_fun<delphi_data, uint64_t, &delphi_data::by_value>>, 
+      indexed_by<"timestamp"_n, const_mem_fun<delphi_data, uint64_t, &delphi_data::by_timestamp>>> datapointstable;
+
 
 };
