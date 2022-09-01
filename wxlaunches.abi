@@ -1,6 +1,6 @@
 {
     "____comment": "This file was generated with eosio-abigen. DO NOT EDIT ",
-    "version": "eosio::abi/1.1",
+    "version": "eosio::abi/1.2",
     "types": [],
     "structs": [
         {
@@ -46,6 +46,32 @@
                 {
                     "name": "flags",
                     "type": "uint8"
+                }
+            ]
+        },
+        {
+            "name": "delphi_data",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "value",
+                    "type": "uint64"
+                },
+                {
+                    "name": "median",
+                    "type": "uint64"
+                },
+                {
+                    "name": "timestamp",
+                    "type": "time_point"
                 }
             ]
         },
@@ -182,6 +208,32 @@
             ]
         },
         {
+            "name": "rewards",
+            "base": "",
+            "fields": [
+                {
+                    "name": "token_contract",
+                    "type": "name"
+                },
+                {
+                    "name": "usd_denominated",
+                    "type": "bool"
+                },
+                {
+                    "name": "amount_per_mb",
+                    "type": "float32"
+                },
+                {
+                    "name": "symbol_letters",
+                    "type": "string"
+                },
+                {
+                    "name": "precision",
+                    "type": "uint8"
+                }
+            ]
+        },
+        {
             "name": "setflag",
             "base": "",
             "fields": [
@@ -217,10 +269,6 @@
                 },
                 {
                     "name": "missing",
-                    "type": "float32"
-                },
-                {
-                    "name": "reward_increment",
                     "type": "float32"
                 },
                 {
@@ -287,10 +335,6 @@
                 },
                 {
                     "name": "missing",
-                    "type": "float32"
-                },
-                {
-                    "name": "reward_increment",
                     "type": "float32"
                 },
                 {
@@ -391,6 +435,13 @@
     ],
     "tables": [
         {
+            "name": "datapoints",
+            "type": "delphi_data",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
             "name": "flags",
             "type": "flags",
             "index_type": "i64",
@@ -412,6 +463,13 @@
             "key_types": []
         },
         {
+            "name": "rewards",
+            "type": "rewards",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
             "name": "station",
             "type": "station",
             "index_type": "i64",
@@ -426,6 +484,8 @@
             "key_types": []
         }
     ],
+    "kv_tables": {},
     "ricardian_clauses": [],
-    "variants": []
+    "variants": [],
+    "action_results": []
 }
