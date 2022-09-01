@@ -11,23 +11,28 @@ ACTION wxlaunches::websetlaunch(name launch_id,
                                 string device_type,
                                 string wxcondition) {
 
-  // Only web app can run this Action
+  // Only self can run this Action
   require_auth(get_self());
+
+  // Check miner account
   check( is_account( miner ), "Miner account invalid.");
+
+  // Check that pressure is physical
+  check( surf_pressure > 50.0 && surf_pressure < 1050.0, "Surface pressure is invalid." );
 
   launches_table_t _launches(get_self(), get_self().value);
   timeslots_table_t _times(get_self(), get_self().value);
 
   bool time_approved = false;
 
+  // Loop through launch windows and check for valid launch time
   for ( auto itr = _times.begin(); itr != _times.end(); itr++ )
   {  
-
     if ( unix_time > itr->start_time && unix_time < itr->end_time )
     {
       time_approved = true;
-      itr++;
-      updatetimes( itr->start_time );
+      //itr++; // Commenting this out allows current window to remain
+      updatetimes( itr->start_time ); // Removes old windows
       break;
     }
   }
@@ -50,7 +55,7 @@ ACTION wxlaunches::websetlaunch(name launch_id,
 
     });
   } else {
-    check( false, "Launch time not valid.");
+    check( false, "Launch time not valid. Next window");
   }
 
 }
@@ -60,7 +65,6 @@ ACTION wxlaunches::setstation(string owner,
                               float longitude, 
                               float elevation,
                               float missing,
-                              float reward_increment,
                               uint8_t launch_window_hrs,
                               uint8_t launch_freq_hrs) {
 
@@ -86,7 +90,6 @@ ACTION wxlaunches::setstation(string owner,
     station.longitude = longitude;
     station.elevation = elevation;
     station.missing = missing;
-    station.reward_increment = reward_increment;
     station.launch_window_hrs = launch_window_hrs;
     station.launch_freq_hrs = launch_freq_hrs;
 
@@ -138,8 +141,16 @@ ACTION wxlaunches::addobs(name launch_id,
                   uint8_t flags) 
 {
   
-  // Only self can run this action
+  // Make sure eosio linkauth action assigns iot permission to add obs action
   require_auth(get_self());
+
+  // Caution use the following line. It forces iot permission to be passed
+  //   Tools like NODE-RED currently pass @active permission by default. You have
+  //   to update telos-node-red-contrib to allow use of custom permissions first
+  //require_auth(permission_level( get_self(), "iot"_n));
+
+  // Check that pressure is reasonable
+  check( pressure_hpa > 0.0, "Pressure is invalid." );
 
   // Get our own tables
   launches_table_t _launches(get_self(), get_self().value);
@@ -179,10 +190,11 @@ ACTION wxlaunches::addobs(name launch_id,
     });
   }
 
-  observations_table_t _observations(get_self(), get_self().value);
+  // Get observations table
+  observation_index observations(get_self(), get_first_receiver().value);
 
   // Add the row to the observation set
-  _observations.emplace(get_self(), [&](auto& obs) {
+  observations.emplace(get_self(), [&](auto& obs) {
     obs.launch_id= launch_id;
     obs.unix_time = unix_time;
     obs.pressure_hpa = pressure_hpa;
@@ -204,15 +216,16 @@ ACTION wxlaunches::removeobs( uint64_t unix_time_start,
   require_auth(get_self());
 
   // Get our own two tables
-  observations_table_t _observations(get_self(), get_self().value);
-  auto observations_itr = _observations.cbegin();
+  observation_index observations(get_self(), get_first_receiver().value);
 
-  while ( observations_itr != _observations.end() )
+  auto observations_itr = observations.cbegin();
+
+  while ( observations_itr != observations.end() )
   {
     uint64_t time = observations_itr->unix_time;
     if ( time >= unix_time_start && time <= unix_time_end )
     {
-      observations_itr = _observations.erase( observations_itr );
+      observations_itr = observations.erase( observations_itr );
       // since the iterator has been erased, no need to increment with ++
     }
     else
@@ -267,13 +280,19 @@ void wxlaunches::sendReward( name miner,
   station_table_t _station(get_self(), get_self().value);
   auto station_itr = _station.find(get_self().value);
   //auto station_itr = _station.find("wxstationdat"_n.value);
+  
+  rewards_table_t _rewards(get_self(), get_self().value);
+  auto rewards_itr = _rewards.begin();
+
+  datapointstable _delphi_prices( name("delphioracle"), get_first_receiver().value );
+  auto delphi_itr = _delphi_prices.begin(); // gets the last price
 
   float pressure_change = last_level - pressure;
-  uint32_t reward_amt = (uint32_t)(10000 * pressure_change * station_itr->reward_increment); // 10,000 = 1 TLOS
 
   // Set reward asset. A value of 10000 is equivalent to 1 Telos
+  /*
   eosio::asset reward = eosio::asset( reward_amt, symbol(symbol_code("TLOS"),4));
-  string memo = "AscensionWx";
+  string memo = "Reached " + to_string(pressure) + " hpa";
 
   // Use an inline action to send reward to miner
   // TODO: Permission should be made to somewhere else
@@ -282,6 +301,49 @@ void wxlaunches::sendReward( name miner,
       "eosio.token"_n, "transfer"_n,
       std::make_tuple( get_self(), miner, reward, memo )
   ).send();
+
+  // Do the same for kanda tokens, but to telokandaone contract
+  reward = eosio::asset( reward_amt, symbol(symbol_code("KANDA"),8));
+  memo = "";
+  action(
+    permission_level{ get_self(), "active"_n },
+    "telokandaone"_n, "transfer"_n,
+    std::make_tuple( get_self(), miner, reward, memo )
+  ).send();
+  */
+
+  string memo;
+  float token_amount;
+
+  // Loop over all rewards
+  while( rewards_itr != _rewards.end() )
+  {
+    // if !reward_itr->usd_denominated
+    if ( rewards_itr->usd_denominated ) {
+      float usd_price = delphi_itr->value / 1000.0;
+      token_amount = rewards_itr->amount_per_mb / usd_price;
+      memo = "Reached " + to_string(pressure) + " hpa";
+    } else {
+      token_amount = rewards_itr->amount_per_mb;
+      memo = "";
+    }
+
+    uint32_t amt_number = (uint32_t)(pow( 10,rewards_itr->precision ) * 
+                                        pressure_change * 
+                                        token_amount);
+    
+    eosio::asset reward = eosio::asset( 
+                            amt_number,
+                            symbol(symbol_code( rewards_itr->symbol_letters ), rewards_itr->precision));
+    
+    // Do inline token transfer
+    action(
+      permission_level{ get_self(), "active"_n },
+      name( rewards_itr->token_contract ) , "transfer"_n,
+      std::make_tuple( get_self(), miner, reward, memo )
+    ).send();
+  }
+
 
 }
 
